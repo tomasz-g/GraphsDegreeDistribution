@@ -1,0 +1,117 @@
+"""
+Project 1, Algorithmic Thinking (Part 1)
+-TG 17/09/2015
+-Degree distributions for graphs
+-project for AT course by Rice University
+https://www.coursera.org/course/algorithmicthink1
+
+The goal of this Module is to get started with simple, yet 
+central, concepts in graph theory, simple principles of 
+discrete probability, and a light version of hypothesis
+testing.
+
+There are three short functions below:
+- create undirected dictionaries corresponding to some 
+simple examples of graphs.
+
+- compute information about the the in-degrees for nodes 
+in these graphs.
+
+- compute information about the distribution of the 
+in-degrees for nodes in these graphs.
+"""
+
+# constants examples of graphs
+EX_GRAPH0 = {0:set([1, 2]), 1:set([]), 2:set([])}
+
+EX_GRAPH1 = {0:set([1, 4, 5]), 1:set([2, 6]), 2:set([3]), 3:set([0]), 4:set([1]), \
+            5:set([2]), 6:set([])}
+
+EX_GRAPH2 = {0:set([1, 4, 5]), 1:set([2, 6]), 2:set([3, 7]), 3:set([7]), 4:set([1]), \
+            5:set([2]), 6:set([]), 7:set([3]), 8:set([1, 2]), 9:set([0, 3, 4, 5, 6, 7])}
+
+
+def make_complete_graph(num_nodes):
+    """
+    (int) -> dict
+    
+    >>> make_complete_graph(3)
+    {0: set([1, 2]), 1: set([0, 2]), 2: set([0, 1])}
+
+    >>> make_complete_graph(6)
+    {0: set([1, 2, 3, 4, 5]), 1: set([0, 2, 3, 4, 5]), 2: set([0, 1, 3, 4, 5]), 3: set([0, 1, 2, 4, 5]), 4: set([0, 1, 2, 3, 5]), 5: set([0, 1, 2, 3, 4])}
+
+    >>> make_complete_graph(-5)
+    {}
+    
+    Returns a dictionary corresponding to a complete directed graph
+    with the specifed number of nodes.
+    Graph contains set/s with all possible edges.
+    The nodes of the graph are numbered: 0 to (num_nodes - 1)
+    
+    condition: self-loops are not allowed
+               if (num_nodes) <= 0 returns empty dict
+    """
+
+    graph = {}
+    paths = set(xrange(num_nodes))
+    
+    for node in xrange(num_nodes):
+        graph[node] = paths.difference(set([node]))
+
+    return graph
+
+
+def compute_in_degrees(digraph):
+    """
+    (dict) -> dict
+    
+    >>> compute_in_degrees({0:set([1, 2]), 1:set([]), 2:set([])})
+    {0: 0, 1: 1, 2: 1}
+
+    >>> compute_in_degrees({0:set([1, 4, 5]), 1:set([2, 6]), 2:set([3]), 3:set([0]), 4:set([1]), 5:set([2]), 6:set([])})
+    {0: 1, 1: 2, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1}
+    
+    Returns a dictionary with the same set of keys (nodes) as digraph 
+    whose corresponding values are the number of edges 
+    whose head matches a particular node (in_degree).
+    """
+    
+    graph = {}
+    
+    for node, edges in digraph.items():
+        if node not in graph:
+            graph[node] = 0
+        for edge in edges:
+            if edge not in graph:
+                graph[edge] = 1
+            else:
+                graph[edge] += 1
+        
+    return graph
+
+
+def in_degree_distribution(digraph):
+    """
+    (dict) -> dict
+    
+    >>> in_degree_distribution({0:set([1, 2]), 1:set([]), 2:set([])})
+    {0: 1, 1: 2}
+
+    >>> in_degree_distribution({0:set([1, 4, 5]), 1:set([2, 6]), 2:set([3]), 3:set([0]), 4:set([1]), 5:set([2]), 6:set([])})    
+    {1: 5, 2: 2}
+    
+    Returns a dictionary whose keys correspond to in-degrees of nodes 
+    in the graph. The value associated with each particular in-degree 
+    is the number of nodes with that in-degree.
+    """
+    
+    graph = {}
+    temp_graph = compute_in_degrees(digraph)
+    graph_values = temp_graph.values()
+    degrees = set(graph_values)
+
+    for value in degrees:
+        graph[value] = graph_values.count(value)
+    
+    return graph
